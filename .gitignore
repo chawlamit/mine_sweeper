@@ -1,2 +1,5 @@
 #Pycharm files
 .idea
+
+#Ignore cache files
+__pycache__
