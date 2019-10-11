@@ -51,8 +51,3 @@ class Environment:
         if self._board[row][col] < 0:
             return True
         return False
-
-
-if __name__ == '__main__':
-    env = Environment(10, 10)
-    env.show()
