@@ -1,9 +1,8 @@
 from environment import Environment
-from agents.baselineAgent import BaselineAgent
+from agents.baseline_agent import BaselineAgent
 
-if __name__ == '__main__':
-    env = Environment(10, 10)
-    agent = BaselineAgent(env)
+env = Environment(10, 10)
+agent = BaselineAgent(env)
 
-    agent.run()
-    print(agent.calc_score())
+agent.run()
+print(agent.calc_score())

@@ -1,13 +1,19 @@
 from environment import Environment
 import random
+from abc import ABC, abstractmethod
 
 
-class BaseAgent:
+class BaseAgent(ABC):
     FLAG = -2
     
     def __init__(self, env: Environment):
         self.env = env
         self.kb = {}
+
+    @abstractmethod
+    def run(self):
+        """Start running the agent on the given mine sweeper environment"""
+        pass
 
     def pick_random(self):
         random_point = random.sample(range(self.env.dim * self.env.dim), 1)
