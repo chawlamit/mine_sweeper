@@ -4,14 +4,18 @@ class Agent:
 
     def __init__(self, env: Environment):
         self.env = env
+        #self.probability = np.array([[1 for i in range(self.dim)] for j in range(self.dim)], dtype = float)#give everyhting a prob of 1 initially
 
     def query(self, row, col):
         pass
 
 
+
 env = Environment(5, 7)
 env.show()
 kb = {}
+
+
 
 def infer(row, col):
     safe = set()
@@ -63,3 +67,5 @@ while(len(kb) < env.dim * env.dim):
             fringe.append(el)
     # print(kb)
 print(kb)
+
+
