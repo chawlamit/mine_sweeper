@@ -16,6 +16,9 @@ class Environment:
         self.dim = dim
         self.n_mines = n_mines
         self._board = [[0] * dim for _ in range(dim)]
+        self.hidden = True
+        self.flagged = False
+
         mine_cells = random.sample(range(dim * dim), n_mines)
 
         for cell in mine_cells:
@@ -51,6 +54,29 @@ class Environment:
         if self._board[row][col] < 0:
             return True
         return False
+
+
+    def no_of_hidden(self, row, col):
+        result = 0
+        for p in range(-1, 2):
+            for q in range(-1, 2):
+                cur_cell = self.query(row + p, col + q)
+                if not cur_cell.is_valid and cur_cell.hidden and not cur_cell.flagged:
+                    result += 1
+        return result
+
+    def no_of_flags(self, row, col):
+        result = 0
+        for p in range(-1, 2):
+            for q in range(-1, 2):
+                if p == 0 and q == 0:
+                    continue
+                cur_cell = self.query(row + p, col + q)
+                if not cur_cell.is_valid and cur_cell.isFlag:
+                    result += 1
+        return result
+
+
 
 
 if __name__ == '__main__':
