@@ -1,7 +1,9 @@
 from .base_agent import BaseAgent
-
+from environment import Environment
 
 class BaselineAgent(BaseAgent):
+    def __init__(self, env: Environment):
+        super().__init__(env)
 
     def infer(self, row, col):
         safe = set()

@@ -32,6 +32,18 @@ class Environment:
         else:
             return self.neighboring_mine_count(row, col)
 
+    def get_valid_neighbors(self, row, col):
+        nbs = []
+        for i in range(-1 + row, 2 + row):
+            for j in range(-1 + col, 2 + col):
+                if i == row and j == col:
+                    continue
+                if self.is_valid(i, j):
+                    nbs.append((i, j))
+        if nbs:
+            return nbs
+        return None
+
     def neighboring_mine_count(self, row, col):
         mine_count = 0
         for i in range(-1, 2):
