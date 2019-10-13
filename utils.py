@@ -1,11 +1,16 @@
 import numpy as np
 
 def partial_equations(a, b):
-    # new_mat = a.copy()
-    prev_change_count = -1
-    change_count = 0
-    while change_count != prev_change_count:
-        prev_change_count = change_count
+    """
+    A helper function to reduce the equations of the form ax = b for each unknown cell
+    to identify them as mine or not mine
+    :param a:
+    :param b:
+    :return:
+    """
+    change_count = -1
+    while change_count != 0:
+        change_count = 0
         for i in range(len(a)):
             for j in range(len(a)):
                 if i == j:
@@ -14,10 +19,5 @@ def partial_equations(a, b):
                     return
                 if len(set(np.where(a[i] == 1)[0]).intersection(set(np.where(a[j] == 1)[0]))) == sum(a[i]):
                     change_count += 1
-                    # print(i, j)
                     a[j, np.where(a[i] == 1)[0]] = 0
                     b[j] -= b[i]
-                    # print("error")
-        # print(b)
-        # print("cc"+str(change_count) )
-        # print("pcc"+str(prev_change_count) )

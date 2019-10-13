@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 class BaseAgent(ABC):
     FLAG = -2
-    
+
     def __init__(self, env: Environment):
         self.env = env
         self.kb = {}
@@ -21,13 +21,27 @@ class BaseAgent(ABC):
         pass
 
     def pick_random(self):
+        """
+        Find a random starting point within the environment to start its search from
+        :return: (row, col) : returns the row, col value of chosen cell
+        """
         random_point = random.sample(range(self.env.dim * self.env.dim), 1)
         return random_point[0] // self.env.dim, random_point[0] % self.env.dim
 
     def query(self, row: int, col: int):
+        """
+        Wrapper function around environments query method
+        :param row:
+        :param col:
+        :return: env.MINE or Mine count in 8 neighbors
+        """
         return self.env.query(row, col)
     
     def calc_score(self):
+        """
+        Calculates the score for your agent based on
+        Correctly_flagged_mines - Incorrectly_flagged_Mines / Total_no_of_mines :return:
+        """
         correctly_flagged_mines = 0
         incorrectly_flagged_mines = 0
         undiscovered_mines = 0
