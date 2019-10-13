@@ -27,14 +27,13 @@ class Agent(BaselineAgent):
         neighbors = set()
         for i in range(-1, 2):
             for j in range(-1, 2):
-                # print(row+i,col+j)
                 if i == 0 and j == 0:
                     continue
                 if self.env.is_valid(row + i, col + j):
                     neighbors.add((row + i, col + j))
                 if (row + i, col + j) in self.kb['clues']:
                     clue = self.kb['clues'][(row + i, col + j)]
-                    if clue == -1:
+                    if clue == self.env.MINE or clue == self.FLAG:
                         mines.add((row + i, col + j))
                     else:
                         safe.add((row + i, col + j))
@@ -53,30 +52,48 @@ class Agent(BaselineAgent):
         fringe = []
         # while fringe:
 
-        while cells_turned + mines_flagged <= self.env.dim ** 2:
-        # for i in range(10):
+        while cells_turned + mines_flagged < self.env.dim ** 2:
+            # for i in range(10):
             # random starting point
             if not fringe:
                 row, col = self.pick_random()
 
-                # keep picking cells until you find an unturned cell
+                # keep picking cells until you find an unturned cell / unflagged cell
                 while (row, col) in self.kb['clues']:
                     row, col = self.pick_random()
 
+                # print('Random Pick')
                 fringe.append((row, col))
 
             while fringe:
                 row, col = fringe.pop(0)
-                print(row, col)
+                # print(row, col)
                 clue = self.query(row, col)
                 cells_turned += 1
                 n, h, m, s = self.infer(row, col)
                 self.kb['clues'][(row, col)] = clue
-                if clue == 0:
+                # Open all the adjoining cells with 0 values
+                if clue == self.env.MINE:
+                    self.kb['clues'][(row, col)] = clue
+                    continue
+                elif clue == 0:
                     for el in n:
                         if el not in self.kb['clues']:
                             self.kb['clues'][el] = None
                             fringe.append(el)
+                # baseline inference logic
+                else:
+                    if clue - len(m) == len(h):
+                        for el in h:
+                            self.kb['clues'][el] = self.FLAG
+                            mines_flagged += 1
+                            print(f'Mine Flagged at {el}')
+
+                    if len(n) - clue - len(s) == len(h):
+                        for el in h:
+                            self.kb['clues'][el] = None
+                            fringe.append(el)
+            # Going beyond local inference with
             var_set = set()
             a = []
             b = []
@@ -84,14 +101,14 @@ class Agent(BaselineAgent):
 
             for row, col in self.kb['clues']:
                 clue = self.kb['clues'][(row, col)]
-                if clue == 0:
+                if clue == 0 or clue == self.env.MINE or clue == self.FLAG:
                     continue
                 n, h, m, s = self.infer(row, col)
-                # TODO - use baseline thing first, before going to eqns
                 if len(h) > 0:
                     eqns[(row, col)] = h
                     # eqns[len(h)].append({'eq': h, 'val': clue})
-                    b.append(clue)
+                    # already found mines need to subtracted from the clue
+                    b.append(clue - len(m))
                     var_set = var_set.union(h)
                     # print("var_set", var_set)
 
@@ -107,17 +124,15 @@ class Agent(BaselineAgent):
 
             var_list = list(var_set)
             for i, key in enumerate(eqns):
-                if sum(a[i]) == b[i]:
-                    if b[i] == 0:
-                        for j in np.where(a[i] == 1)[0]:
-                            fringe.append(var_list[j])
-                    else:
-                        for j in np.where(a[i] == 1)[0]:
-
-                            print('var_list', var_list[j])
-                            self.kb['clues'][var_list[j]] = self.FLAG
-                            mines_flagged += 1
-
+                if b[i] == 0:
+                    for j in np.where(a[i] == 1)[0]:
+                        self.kb['clues'][var_list[j]] = None
+                        fringe.append(var_list[j])
+                elif sum(a[i]) == b[i]:
+                    for j in np.where(a[i] == 1)[0]:
+                        self.kb['clues'][var_list[j]] = self.FLAG
+                        mines_flagged += 1
+                        print(f'Mine Flagged at {var_list[j]}')
 
     def calc_score(self):
         correctly_flagged_mines = 0
@@ -132,14 +147,11 @@ class Agent(BaselineAgent):
             elif self.kb['clues'][(i, j)] == self.env.MINE:
                 undiscovered_mines += 1
         score = (correctly_flagged_mines - incorrectly_flagged_mines) / self.env.n_mines
-        print(correctly_flagged_mines, incorrectly_flagged_mines)
+        print(f'correctly_flagged: {correctly_flagged_mines}, incorrectly_flagged:{incorrectly_flagged_mines}')
         return score
 
 
 
-
-
-    #
     # def is_cell_turned(self, eqns, n, i):
     #     to_remove = []
     #     to_add = []
@@ -205,10 +217,3 @@ class Agent(BaselineAgent):
     #             tr, ta = self.is_cell_turned(eqns, n, i)
     #             to_remove += tr
     #
-
-
-
-
-
-
-

@@ -15,6 +15,11 @@ class BaseAgent(ABC):
         """Start running the agent on the given mine sweeper environment"""
         pass
 
+    @abstractmethod
+    def infer(self):
+        """based on the clue from the environment upton turning a cell, infer basic knowledge from it"""
+        pass
+
     def pick_random(self):
         random_point = random.sample(range(self.env.dim * self.env.dim), 1)
         return random_point[0] // self.env.dim, random_point[0] % self.env.dim
@@ -35,6 +40,7 @@ class BaseAgent(ABC):
             elif self.kb[(i, j)] == self.env.MINE:
                 undiscovered_mines += 1
         score = (correctly_flagged_mines - incorrectly_flagged_mines) / self.env.n_mines
+        print(f'correctly_flagged: {correctly_flagged_mines}, incorrectly_flagged:{incorrectly_flagged_mines}')
         return score
 
 

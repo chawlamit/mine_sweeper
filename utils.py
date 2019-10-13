@@ -14,10 +14,10 @@ def partial_equations(a, b):
                     return
                 if len(set(np.where(a[i] == 1)[0]).intersection(set(np.where(a[j] == 1)[0]))) == sum(a[i]):
                     change_count += 1
-                    print(i, j)
+                    # print(i, j)
                     a[j, np.where(a[i] == 1)[0]] = 0
                     b[j] -= b[i]
                     # print("error")
-        print(a)
-        print("cc"+str(change_count) )
-        print("pcc"+str(prev_change_count) )
+        # print(b)
+        # print("cc"+str(change_count) )
+        # print("pcc"+str(prev_change_count) )
