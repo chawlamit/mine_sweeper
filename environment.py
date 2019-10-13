@@ -66,8 +66,6 @@ class Environment:
         if self._board[row][col] < 0:
             return True
         return False
-<<<<<<< HEAD
-
 
     def no_of_hidden(self, row, col):
         result = 0
@@ -89,11 +87,6 @@ class Environment:
                     result += 1
         return result
 
-
-
-
 if __name__ == '__main__':
     env = Environment(10, 10)
     env.show()
-=======
->>>>>>> d8a1416774c604e5fd6f8956a322822af6f97a68
