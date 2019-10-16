@@ -1,17 +1,7 @@
-from collections import OrderedDict
-import numpy as np
+from final_agent import Agent
 
-from environment import Environment
-from .baseline_agent import BaselineAgent
-from utils import partial_equations
-
-
-class Agent(BaselineAgent):
-
-    def __init__(self, env: Environment):
-        super().__init__(env)
-
-    def run(self):
+class ProbabilisticAgent(Agent) :
+    def run(self) :
         cells_turned = 0
         mines_flagged = 0
         clue = row = col = None
@@ -20,9 +10,9 @@ class Agent(BaselineAgent):
         while cells_turned + mines_flagged < self.env.dim ** 2:
             # random starting point
             if not fringe:
-                row, col = self.pick_random()
+                row, col = self.probabilistic_pick()
 
-                # print('Random Pick')
+                # print('Pro')
                 fringe.append((row, col))
 
             while fringe:
