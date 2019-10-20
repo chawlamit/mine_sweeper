@@ -21,32 +21,39 @@ class BaseAgent(ABC):
         """based on the clue from the environment upton turning a cell, infer basic knowledge from it"""
         pass
 
-    def probabilistic_pick(self, cells_turned:int, mines_flagged:int ) :
+    def probabilistic_pick(self, cells_turned: int, mines_flagged: int) :
         ''' Use the Remaining mines information while opening a random point to search '''
-        rand_prob = ( self.env.n_mines - mines_flagged )/ (self.env.dim**2 - cells_turned - mines_flagged )
+        remaining_cells = self.env.dim**2 - cells_turned - mines_flagged
+        rand_prob = ( self.env.n_mines - mines_flagged )/ remaining_cells
         dict_hidden_prob = {}
 
-        for (row,col) in self.kb :
-            clue = self.kb[(row,col)]
+        for (row, col) in self.kb:
+            clue = self.kb[(row, col)]
             if clue == self.env.MINE or clue == self.FLAG :
                 continue
             n, h, m, s = self.infer(row, col)
+            if len(h) == 0:
+                continue
             prob_hidden = (clue - len(m)) / len(h)
-            for (row,col) in h :
-                if (row,col) in d :
-                    dict_hidden_prob[(row,col)] += prob_hidden
-                else :
-                    dict_hidden_prob[(row,col)] = prob_hidden
-        list_sorted_probabilities = sorted(d.items(),key= lambda l:l[1] )
+            for (row_, col_) in h:
+                if (row_, col_) in dict_hidden_prob :
+                    dict_hidden_prob[(row_, col_)] += prob_hidden
+                else:
+                    dict_hidden_prob[(row_, col_)] = prob_hidden
+        list_sorted_probabilities = sorted(dict_hidden_prob.items(), key=lambda l: l[1])
+        # print(list_sorted_probabilities)
+        # print("rand_prob", rand_prob)
+        if list_sorted_probabilities:
+            if list_sorted_probabilities[0][1] < rand_prob:
+                print("Probabilistic pick ", list_sorted_probabilities[0][0])
+                return list_sorted_probabilities[0][0]
 
-        if list_sorted_probabilities[0] < rand_prob :
-            print("Probabilistic pick")
-            return list_sorted_probabilities[1]
         row, col = self.pick_random()
 
-        while(row, col) is not in dict_hidden_prob:
-            row, col  = self.pick_random()
+        while (row, col) in dict_hidden_prob and len(dict_hidden_prob) < remaining_cells:
+            row, col = self.pick_random()
 
+        # print("random pick", row, col)
         return row, col
 
 

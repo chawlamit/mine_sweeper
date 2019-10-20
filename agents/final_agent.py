@@ -22,7 +22,7 @@ class Agent(BaselineAgent):
             if not fringe:
                 row, col = self.pick_random()
 
-                # print('Random Pick')
+                print('Random Pick', row, col)
                 fringe.append((row, col))
 
             while fringe:
