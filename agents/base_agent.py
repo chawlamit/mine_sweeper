@@ -1,8 +1,15 @@
 from environment import Environment
 import random
 from abc import ABC, abstractmethod
+from time import sleep
+# from visualization import MainWindow
+# from PyQt5.QtWidgets import QApplication
+from multiprocessing import Process, Manager
+from minesweepermatplot import MineSweeper 
+import matplotlib.pyplot as plt
 
-
+class Event:
+    pass
 
 class BaseAgent(ABC):
     FLAG = -2
@@ -10,6 +17,11 @@ class BaseAgent(ABC):
     def __init__(self, env: Environment):
         self.env = env
         self.kb = {}
+        self.manager = dict()
+        self.manager['ms'] = ms = MineSweeper(self.env.dim, self.env.dim, self.env.n_mines)
+        ms._show_board()
+        # p = Process(target=ms._show_board)
+        # p.start()
 
     @abstractmethod
     def run(self):
@@ -20,11 +32,38 @@ class BaseAgent(ABC):
     def infer(self):
         """based on the clue from the environment upton turning a cell, infer basic knowledge from it"""
         pass
+    
+    # def initialize_visualization_pyqt(self,dim:int, manager) :
+    #     # self.app = QApplication([])
+    #     # self.window = MainWindow(self.env.dim)
+    #     # self.window.show()
+
+    #     if QApplication.instance() is None:
+    #         app = QApplication([])
+    #         window = MainWindow(dim)
+    #         manager['grid'] = window.grid
+    #         # self.window.show()
+    #         # sleep(1)
+    #         app.exec_()
+    #         # self.window.callback_pb_load()
+
+    # def update_visualization_pyqt(self, row,col,val):
+    #     sleep(1)
+    #     w = self.manager['grid'].itemAtPosition(col, row).widget()
+    #     if val == Environment.MINE :
+    #         w.is_mine = True
+    #         w.is_revealed = True
+    #     else :
+    #         w.is_revealed = True
+    #         w.adjacent_n = val
+    #     w.update()
+
 
     def probabilistic_pick(self, cells_turned:int, mines_flagged:int ) :
         ''' Use the Remaining mines information while opening a random point to search '''
         rand_prob = ( self.env.n_mines - mines_flagged )/ (self.env.dim**2 - cells_turned - mines_flagged )
         dict_hidden_prob = {}
+        # plt.pause(0.
 
         for (row,col) in self.kb :
             clue = self.kb[(row,col)]
@@ -44,15 +83,10 @@ class BaseAgent(ABC):
             return list_sorted_probabilities[1]
         row, col = self.pick_random()
 
-        while(row, col) is not in dict_hidden_prob:
+        while(row, col) not in dict_hidden_prob:
             row, col  = self.pick_random()
 
         return row, col
-
-
-
-                
-
 
     def pick_random(self):
         """
@@ -75,8 +109,25 @@ class BaseAgent(ABC):
         :param col:
         :return: env.MINE or Mine count in 8 neighbors
         """
-        return self.env.query(row, col)
+        clue = self.env.query(row, col)
+        event = Event()
+        event.xdata = row
+        event.ydata = col
+        event.button = 1
+        # plt.draw()
+        # plt.pause(0.1)
+        self.manager['ms']._button_press(event, clue)
+        return clue
     
+    def flag(self, row, col):
+        self.kb[(row, col)] = self.FLAG
+        clue = -1
+        event = Event()
+        event.xdata = row
+        event.ydata = col
+        event.button = 3
+        self.manager['ms']._button_press(event, clue)
+
     def calc_score(self):
         """
         Calculates the score for your agent based on
@@ -97,8 +148,8 @@ class BaseAgent(ABC):
         print(f'correctly_flagged: {correctly_flagged_mines}, incorrectly_flagged:{incorrectly_flagged_mines}')
         return score
 
-
-
+    def wait(self):
+        plt.pause(50)
 
 
 

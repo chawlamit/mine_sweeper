@@ -4,6 +4,7 @@ import numpy as np
 from environment import Environment
 from .baseline_agent import BaselineAgent
 from utils import partial_equations
+from time import sleep
 
 
 class Agent(BaselineAgent):
@@ -16,6 +17,8 @@ class Agent(BaselineAgent):
         mines_flagged = 0
         clue = row = col = None
         fringe = []
+        print("Entered run")
+
         # can also use the same exit condition as the baseline agent
         while cells_turned + mines_flagged < self.env.dim ** 2:
             # random starting point
@@ -27,14 +30,15 @@ class Agent(BaselineAgent):
 
             while fringe:
                 row, col = fringe.pop(0)
-                # print(row, col)
+                print("quried", row, col)
                 clue = self.query(row, col)
+                # self.update_visualization_pyqt(row,col,clue)
                 cells_turned += 1
-                n, h, m, s = self.infer(row, col)
                 self.kb[(row, col)] = clue
+                n, h, m, s = self.infer(row, col)
                 # Open all the adjoining cells with 0 values
                 if clue == self.env.MINE:
-                    self.kb[(row, col)] = clue
+                    # self.kb[(row, col)] = clue
                     continue
                 elif clue == 0:
                     for el in n:
@@ -45,7 +49,7 @@ class Agent(BaselineAgent):
                 else:
                     if clue - len(m) == len(h):
                         for el in h:
-                            self.kb[el] = self.FLAG
+                            self.flag(*el)
                             mines_flagged += 1
                             print(f'Mine Flagged at {el}')
 
@@ -90,6 +94,11 @@ class Agent(BaselineAgent):
                         fringe.append(var_list[j])
                 elif sum(a[i]) == b[i]:
                     for j in np.where(a[i] == 1)[0]:
-                        self.kb[var_list[j]] = self.FLAG
+                        self.flag(*var_list[j])
                         mines_flagged += 1
                         print(f'Mine Flagged at {var_list[j]}')
+        print("done")
+        print("cells_turned", cells_turned)
+        print("mines_flagged", mines_flagged)
+        print("clicked_cells", self.manager['ms'].clicked)
+        self.wait()
