@@ -177,9 +177,9 @@ class MineSweeper(object):
             self._toggle_mine_flag(i, j)
         
         self.fig.canvas.draw()
-        plt.pause(1)
+        # plt.pause(1)
+        input()
 
-    
     def _show_board(self):
         print("Process entered")
         plt.ion()

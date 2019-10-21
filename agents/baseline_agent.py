@@ -40,8 +40,8 @@ class BaselineAgent(BaseAgent):
 
             row, col = fringe.pop(0)
 
-            self.kb[(row, col)] = self.env.query(row, col)
-            clue = self.kb[(row, col)]
+            clue = self.query(row, col)
+            self.kb[(row, col)] = clue
 
             neighbors, hidden, mines, safe = self.infer(row, col)
 
@@ -49,7 +49,7 @@ class BaselineAgent(BaseAgent):
             # deduction: deduce new knowledge from the inferred knowledge
             if clue - len(mines) == len(hidden):
                 for el in hidden:
-                    self.kb[el] = self.env.MINE
+                    self.flag(*el)
 
             if len(neighbors) - clue - len(safe) == len(hidden):
                 for el in hidden:

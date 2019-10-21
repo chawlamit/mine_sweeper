@@ -89,13 +89,8 @@ class BaseAgent(ABC):
 
         row, col = self.pick_random()
 
-<<<<<<< HEAD
-        while(row, col) not in dict_hidden_prob:
-            row, col  = self.pick_random()
-=======
         while (row, col) in dict_hidden_prob and len(dict_hidden_prob) < remaining_cells:
             row, col = self.pick_random()
->>>>>>> 23fdc827e64386d7a4a578d90b1ad856ea7139e9
 
         # print("random pick", row, col)
         return row, col
@@ -162,6 +157,9 @@ class BaseAgent(ABC):
 
     def wait(self):
         plt.pause(50)
+
+
+    # def simulate_steps(self, ):
 
 
 

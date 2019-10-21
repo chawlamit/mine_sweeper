@@ -46,17 +46,17 @@ class Agent(BaselineAgent):
                             self.kb[el] = None
                             fringe.append(el)
                 # baseline inference logic
-                else:
-                    if clue - len(m) == len(h):
-                        for el in h:
-                            self.flag(*el)
-                            mines_flagged += 1
-                            print(f'Mine Flagged at {el}')
-
-                    if len(n) - clue - len(s) == len(h):
-                        for el in h:
-                            self.kb[el] = None
-                            fringe.append(el)
+                # else:
+                #     if clue - len(m) == len(h):
+                #         for el in h:
+                #             self.flag(*el)
+                #             mines_flagged += 1
+                #             print(f'Mine Flagged at {el}')
+                #
+                #     if len(n) - clue - len(s) == len(h):
+                #         for el in h:
+                #             self.kb[el] = None
+                #             fringe.append(el)
             # Going beyond local inference with
             var_set = set()
             a = []
@@ -90,15 +90,16 @@ class Agent(BaselineAgent):
             for i, key in enumerate(eqns):
                 if b[i] == 0:
                     for j in np.where(a[i] == 1)[0]:
-                        self.kb[var_list[j]] = None
-                        fringe.append(var_list[j])
+                        if var_list[j] not in self.kb:
+                            self.kb[var_list[j]] = None
+                            fringe.append(var_list[j])
                 elif sum(a[i]) == b[i]:
                     for j in np.where(a[i] == 1)[0]:
-                        self.flag(*var_list[j])
-                        mines_flagged += 1
-                        print(f'Mine Flagged at {var_list[j]}')
+                        if var_list[j] not in self.kb:
+                            self.flag(*var_list[j])
+                            mines_flagged += 1
+                            print(f'Mine Flagged at {var_list[j]}')
         print("done")
         print("cells_turned", cells_turned)
         print("mines_flagged", mines_flagged)
         print("clicked_cells", self.manager['ms'].clicked)
-        self.wait()
