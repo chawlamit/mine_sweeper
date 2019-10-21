@@ -2,6 +2,7 @@ from environment import Environment
 from agents.baseline_agent import BaselineAgent
 from agents.final_agent import Agent
 from agents.probabilistic_agent import ProbabilisticAgent
+from agents.mine_aware_agent import MineAwareAgent
 
 
 env = Environment(10, 40)
@@ -19,15 +20,19 @@ env.show()
 
 scores = []
 
-agent = BaselineAgent(env)
-agent.run()
-scores.append(agent.calc_score())
+# agent = BaselineAgent(env)
+# agent.run()
+# scores.append(agent.calc_score())
+#
+# agent = Agent(env)
+# agent.run()
+# scores.append(agent.calc_score())
+#
+# agent = ProbabilisticAgent(env)
+# agent.run()
+# scores.append(agent.calc_score())
 
-agent = Agent(env)
-agent.run()
-scores.append(agent.calc_score())
-
-agent = ProbabilisticAgent(env)
+agent = MineAwareAgent(env)
 agent.run()
 scores.append(agent.calc_score())
 

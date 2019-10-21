@@ -67,8 +67,6 @@ class BaseAgent(ABC):
         event.xdata = row
         event.ydata = col
         event.button = 1
-        # plt.draw()
-        # plt.pause(0.1)
         self.manager['ms']._button_press(event, clue)
         return clue
 
@@ -104,5 +102,3 @@ class BaseAgent(ABC):
 
     def wait(self):
         plt.pause(50)
-
-    # def simulate_steps(self, ):
