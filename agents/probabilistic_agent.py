@@ -1,4 +1,7 @@
-from final_agent import Agent
+from .final_agent import Agent
+from collections import OrderedDict
+import numpy as np
+from utils import partial_equations
 
 class ProbabilisticAgent(Agent) :
     def run(self) :
@@ -10,14 +13,14 @@ class ProbabilisticAgent(Agent) :
         while cells_turned + mines_flagged < self.env.dim ** 2:
             # random starting point
             if not fringe:
-                row, col = self.probabilistic_pick()
+                row, col = self.probabilistic_pick(cells_turned,mines_flagged)
 
                 # print('Pro')
                 fringe.append((row, col))
 
             while fringe:
                 row, col = fringe.pop(0)
-                # print(row, col)
+                # print(row, cosl)
                 clue = self.query(row, col)
                 cells_turned += 1
                 n, h, m, s = self.infer(row, col)
