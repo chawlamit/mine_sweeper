@@ -26,9 +26,9 @@ class BaseAgent(ABC):
         self.mines_burst = 0
         self.fringe = []
 
-        self.manager = dict()
-        self.manager['ms'] = ms = MineSweeper(self.env.dim, self.env.dim, self.env.n_mines)
-        ms._show_board()
+        # self.manager = dict()
+        # self.manager['ms'] = ms = MineSweeper(self.env.dim, self.env.dim, self.env.n_mines)
+        # ms._show_board()
 
     @abstractmethod
     def run(self):
@@ -69,7 +69,7 @@ class BaseAgent(ABC):
         event.button = 1
         # plt.draw()
         # plt.pause(0.1)
-        self.manager['ms']._button_press(event, clue)
+        # self.manager['ms']._button_press(event, clue)
         return clue
 
     def flag(self, row, col):
@@ -80,7 +80,7 @@ class BaseAgent(ABC):
         event.xdata = row
         event.ydata = col
         event.button = 3
-        self.manager['ms']._button_press(event, clue)
+        # self.manager['ms']._button_press(event, clue)
 
     def calc_score(self):
         """
@@ -103,6 +103,6 @@ class BaseAgent(ABC):
         return score
 
     def wait(self):
-        plt.pause(50)
+        plt.pause(5)
 
     # def simulate_steps(self, ):

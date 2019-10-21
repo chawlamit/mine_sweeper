@@ -88,4 +88,4 @@ class Agent(BaselineAgent):
         print("done")
         print("cells_turned", self.cells_turned)
         print("mines_flagged", self.mines_flagged)
-        print("clicked_cells", self.manager['ms'].clicked)
+        # print("clicked_cells", self.manager['ms'].clicked)
