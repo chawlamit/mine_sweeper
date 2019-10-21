@@ -1,7 +1,16 @@
 from environment import Environment
 import random
 from abc import ABC, abstractmethod
+from time import sleep
+# from visualization import MainWindow
+# from PyQt5.QtWidgets import QApplication
+from multiprocessing import Process, Manager
+from minesweepermatplot import MineSweeper
+import matplotlib.pyplot as plt
 
+
+class Event:
+    pass
 
 
 class BaseAgent(ABC):
@@ -10,6 +19,16 @@ class BaseAgent(ABC):
     def __init__(self, env: Environment):
         self.env = env
         self.kb = {}
+
+        # stats
+        self.cells_turned = 0
+        self.mines_flagged = 0
+        self.mines_burst = 0
+        self.fringe = []
+
+        self.manager = dict()
+        self.manager['ms'] = ms = MineSweeper(self.env.dim, self.env.dim, self.env.n_mines)
+        ms._show_board()
 
     @abstractmethod
     def run(self):
@@ -20,39 +39,6 @@ class BaseAgent(ABC):
     def infer(self):
         """based on the clue from the environment upton turning a cell, infer basic knowledge from it"""
         pass
-
-    def probabilistic_pick(self, cells_turned:int, mines_flagged:int ) :
-        ''' Use the Remaining mines information while opening a random point to search '''
-        rand_prob = ( self.env.n_mines - mines_flagged )/ (self.env.dim**2 - cells_turned - mines_flagged )
-        dict_hidden_prob = {}
-
-        for (row,col) in self.kb :
-            clue = self.kb[(row,col)]
-            if clue == self.env.MINE or clue == self.FLAG :
-                continue
-            n, h, m, s = self.infer(row, col)
-            prob_hidden = (clue - len(m)) / len(h)
-            for (row,col) in h :
-                if (row,col) in d :
-                    dict_hidden_prob[(row,col)] += prob_hidden
-                else :
-                    dict_hidden_prob[(row,col)] = prob_hidden
-        list_sorted_probabilities = sorted(d.items(),key= lambda l:l[1] )
-
-        if list_sorted_probabilities[0] < rand_prob :
-            print("Probabilistic pick")
-            return list_sorted_probabilities[1]
-        row, col = self.pick_random()
-
-        while(row, col) is not in dict_hidden_prob:
-            row, col  = self.pick_random()
-
-        return row, col
-
-
-
-                
-
 
     def pick_random(self):
         """
@@ -75,8 +61,27 @@ class BaseAgent(ABC):
         :param col:
         :return: env.MINE or Mine count in 8 neighbors
         """
-        return self.env.query(row, col)
-    
+        clue = self.env.query(row, col)
+        self.cells_turned += 1
+        event = Event()
+        event.xdata = row
+        event.ydata = col
+        event.button = 1
+        # plt.draw()
+        # plt.pause(0.1)
+        self.manager['ms']._button_press(event, clue)
+        return clue
+
+    def flag(self, row, col):
+        self.kb[(row, col)] = self.FLAG
+        self.mines_flagged += 1
+        clue = -1
+        event = Event()
+        event.xdata = row
+        event.ydata = col
+        event.button = 3
+        self.manager['ms']._button_press(event, clue)
+
     def calc_score(self):
         """
         Calculates the score for your agent based on
@@ -97,11 +102,7 @@ class BaseAgent(ABC):
         print(f'correctly_flagged: {correctly_flagged_mines}, incorrectly_flagged:{incorrectly_flagged_mines}')
         return score
 
+    def wait(self):
+        plt.pause(50)
 
-
-
-
-
-
-
-            
+    # def simulate_steps(self, ):

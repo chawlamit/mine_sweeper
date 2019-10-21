@@ -1,12 +1,9 @@
 from environment import Environment
 from agents.baseline_agent import BaselineAgent
 from agents.final_agent import Agent
-from visualizationms import MainWindow
+
 
 import numpy as np
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
 
 import matplotlib.pyplot as plt
 

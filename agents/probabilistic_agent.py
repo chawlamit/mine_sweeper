@@ -1,85 +1,55 @@
-from final_agent import Agent
+from .final_agent import Agent
+from collections import OrderedDict
+import numpy as np
+from utils import partial_equations
 
-class ProbabilisticAgent(Agent) :
-    def run(self) :
-        cells_turned = 0
-        mines_flagged = 0
-        clue = row = col = None
-        fringe = []
-        # can also use the same exit condition as the baseline agent
-        while cells_turned + mines_flagged < self.env.dim ** 2:
-            # random starting point
-            if not fringe:
-                row, col = self.probabilistic_pick()
 
-                # print('Pro')
-                fringe.append((row, col))
+class ProbabilisticAgent(Agent):
 
-            while fringe:
-                row, col = fringe.pop(0)
-                # print(row, col)
-                clue = self.query(row, col)
-                cells_turned += 1
-                n, h, m, s = self.infer(row, col)
-                self.kb[(row, col)] = clue
-                # Open all the adjoining cells with 0 values
-                if clue == self.env.MINE:
-                    self.kb[(row, col)] = clue
-                    continue
-                elif clue == 0:
-                    for el in n:
-                        if el not in self.kb:
-                            self.kb[el] = None
-                            fringe.append(el)
-                # baseline inference logic
+    def probabilistic_pick(self, cells_turned: int, mines_flagged: int):
+        """ Use the Remaining mines information while opening a random point to search """
+        remaining_cells = self.env.dim ** 2 - cells_turned - mines_flagged
+        rand_prob = (self.env.n_mines - mines_flagged) / remaining_cells
+        dict_hidden_prob = {}
+        # plt.pause(0.
+
+        for (row, col) in self.kb:
+            clue = self.kb[(row, col)]
+            if clue == self.env.MINE or clue == self.FLAG:
+                continue
+            n, h, m, s = self.infer(row, col)
+            if len(h) == 0:
+                continue
+            prob_hidden = (clue - len(m)) / len(h)
+            for (row_, col_) in h:
+                if (row_, col_) in dict_hidden_prob:
+                    dict_hidden_prob[(row_, col_)] += prob_hidden
                 else:
-                    if clue - len(m) == len(h):
-                        for el in h:
-                            self.kb[el] = self.FLAG
-                            mines_flagged += 1
-                            print(f'Mine Flagged at {el}')
+                    dict_hidden_prob[(row_, col_)] = prob_hidden
+        list_sorted_probabilities = sorted(dict_hidden_prob.items(), key=lambda l: l[1])
+        # print(list_sorted_probabilities)
+        # print("rand_prob", rand_prob)
+        if list_sorted_probabilities:
+            if list_sorted_probabilities[0][1] < rand_prob:
+                print("Probabilistic pick ", list_sorted_probabilities[0][0])
+                return list_sorted_probabilities[0][0]
 
-                    if len(n) - clue - len(s) == len(h):
-                        for el in h:
-                            self.kb[el] = None
-                            fringe.append(el)
-            # Going beyond local inference with
-            var_set = set()
-            a = []
-            b = []
-            eqns = OrderedDict()
+        row, col = self.pick_random()
 
-            for row, col in self.kb:
-                clue = self.kb[(row, col)]
-                if clue == 0 or clue == self.env.MINE or clue == self.FLAG:
-                    continue
-                n, h, m, s = self.infer(row, col)
-                if len(h) > 0:
-                    eqns[(row, col)] = h
-                    # eqns[len(h)].append({'eq': h, 'val': clue})
-                    # already found mines need to subtracted from the clue
-                    b.append(clue - len(m))
-                    var_set = var_set.union(h)
-                    # print("var_set", var_set)
+        while (row, col) in dict_hidden_prob and len(dict_hidden_prob) < remaining_cells:
+            row, col = self.pick_random()
 
-            n_vars = len(var_set)
-            for _, hidden_set in eqns.items():
-                eq = [0] * n_vars
-                for i, var in enumerate(var_set):
-                    if var in hidden_set:
-                        eq[i] = 1
-                a.append(eq)
-            a, b = np.array(a), np.array(b)
-            partial_equations(a, b)
+        # print("random pick", row, col)
+        return row, col
 
-            var_list = list(var_set)
-            for i, key in enumerate(eqns):
-                if b[i] == 0:
-                    for j in np.where(a[i] == 1)[0]:
-                        self.kb[var_list[j]] = None
-                        fringe.append(var_list[j])
-                elif sum(a[i]) == b[i]:
-                    for j in np.where(a[i] == 1)[0]:
-                        self.kb[var_list[j]] = self.FLAG
-                        mines_flagged += 1
-                        print(f'Mine Flagged at {var_list[j]}')
+    def run(self):
+        clue = row = col = None
+        # can also use the same exit condition as the baseline agent
+        while self.cells_turned + self.mines_flagged < self.env.dim ** 2:
+            # random starting point
+            if not self.fringe:
+                row, col = self.probabilistic_pick(self.cells_turned, self.mines_flagged)
+                self.fringe.append((row, col))
+
+            self.explore_fringe()
+            self.make_eqns()

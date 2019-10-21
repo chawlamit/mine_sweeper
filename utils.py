@@ -15,8 +15,8 @@ def partial_equations(a, b):
             for j in range(len(a)):
                 if i == j:
                     continue
-                if sum(a[i]) == 0:
-                    return
+                if sum(a[i]) == 0 or sum(a[j] == 0):
+                    continue
                 if len(set(np.where(a[i] == 1)[0]).intersection(set(np.where(a[j] == 1)[0]))) == sum(a[i]):
                     change_count += 1
                     a[j, np.where(a[i] == 1)[0]] = 0
