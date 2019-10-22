@@ -13,7 +13,7 @@ class Event:
 class BaseAgent(ABC):
     FLAG = -2
 
-    def __init__(self, env: Environment, visualize=False, debug=False):
+    def __init__(self, env: Environment, debug=False, visualize=False):
         self.env = env
         self.kb = {}
         self.visualize = visualize
