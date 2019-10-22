@@ -3,8 +3,6 @@ from .base_agent import BaseAgent
 
 
 class BaselineAgent(BaseAgent):
-    def __init__(self, env: Environment):
-        super().__init__(env)
 
     def infer(self, row, col):
 
@@ -33,7 +31,6 @@ class BaselineAgent(BaseAgent):
     def run(self):
         fringe = []
         while self.cells_turned + self.mines_flagged < self.env.dim * self.env.dim:
-            # print('Fringe: ', fringe)
 
             if not fringe:
                 row, col = self.pick_random()

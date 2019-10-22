@@ -1,5 +1,13 @@
 import numpy as np
 
+SETTINGS = {'debug': False}
+
+
+def debug(*args):
+    if SETTINGS['debug']:
+        print(*args)
+
+
 def partial_equations(a, b):
     """
     A helper function to reduce the equations of the form ax = b for each unknown cell

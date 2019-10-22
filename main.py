@@ -5,34 +5,35 @@ from agents.probabilistic_agent import ProbabilisticAgent
 from agents.mine_aware_agent import MineAwareAgent
 
 
-env = Environment(10, 40)
-env._board = [[0, 0, -1, 0, 0, -1, -1, 0, 0, 0],
-[-1, -1, -1, 0, 0, -1, -1, -1, 0, -1],
-[0, 0, 0, 0, 0, 0, -1, 0, 0, 0],
-[0, -1, 0, -1, -1, 0, 0, -1, 0, -1],
-[0, -1, -1, -1, 0, 0, 0, 0, -1, -1],
-[0, 0, 0, -1, -1, 0, 0, 0, 0, 0],
-[0, 0, -1, 0, 0, -1, -1, -1, 0, 0],
-[-1, -1, -1, -1, -1, 0, 0, -1, 0, 0],
-[0, 0, -1, -1, 0, 0, 0, -1, -1, 0],
-[0, 0, 0, 0, -1, 0, -1, 0, -1, 0]]
+env = Environment(10, 25)
+# env._board = [[0, 0, -1, 0, 0, -1, -1, 0, 0, 0],
+# [-1, -1, -1, 0, 0, -1, -1, -1, 0, -1],
+# [0, 0, 0, 0, 0, 0, -1, 0, 0, 0],
+# [0, -1, 0, -1, -1, 0, 0, -1, 0, -1],
+# [0, -1, -1, -1, 0, 0, 0, 0, -1, -1],
+# [0, 0, 0, -1, -1, 0, 0, 0, 0, 0],
+# [0, 0, -1, 0, 0, -1, -1, -1, 0, 0],
+# [-1, -1, -1, -1, -1, 0, 0, -1, 0, 0],
+# [0, 0, -1, -1, 0, 0, 0, -1, -1, 0],
+# [0, 0, 0, 0, -1, 0, -1, 0, -1, 0]]
 env.show()
 
 scores = []
 
-# agent = BaselineAgent(env)
-# agent.run()
-# scores.append(agent.calc_score())
+agent = BaselineAgent(env)
+agent.run()
+scores.append(agent.calc_score())
 #
-# agent = Agent(env)
-# agent.run()
-# scores.append(agent.calc_score())
-#
+agent = Agent(env, visualize=False)
+agent.run()
+scores.append(agent.calc_score())
+# #
 # agent = ProbabilisticAgent(env)
 # agent.run()
 # scores.append(agent.calc_score())
 
-agent = MineAwareAgent(env)
+agent = MineAwareAgent(env, visualize=False)
+# use mean for calculating progbabilities
 agent.run()
 scores.append(agent.calc_score())
 

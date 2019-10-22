@@ -1,12 +1,9 @@
 from environment import Environment
 import random
 from abc import ABC, abstractmethod
-from time import sleep
-# from visualization import MainWindow
-# from PyQt5.QtWidgets import QApplication
-from multiprocessing import Process, Manager
 from minesweepermatplot import MineSweeper
 import matplotlib.pyplot as plt
+from utils import SETTINGS
 
 
 class Event:
@@ -16,9 +13,11 @@ class Event:
 class BaseAgent(ABC):
     FLAG = -2
 
-    def __init__(self, env: Environment):
+    def __init__(self, env: Environment, visualize=False, debug=False):
         self.env = env
         self.kb = {}
+        self.visualize = visualize
+        SETTINGS['debug'] = debug
 
         # stats
         self.cells_turned = 0
@@ -26,9 +25,9 @@ class BaseAgent(ABC):
         self.mines_burst = 0
         self.fringe = []
 
-        self.manager = dict()
-        self.manager['ms'] = ms = MineSweeper(self.env.dim, self.env.dim, self.env.n_mines)
-        ms._show_board()
+        if visualize:
+            self.visual_ms = ms = MineSweeper(self.env.dim, self.env.dim, self.env.n_mines)
+            ms._show_board()
 
     @abstractmethod
     def run(self):
@@ -63,22 +62,30 @@ class BaseAgent(ABC):
         """
         clue = self.env.query(row, col)
         self.cells_turned += 1
-        event = Event()
-        event.xdata = row
-        event.ydata = col
-        event.button = 1
-        self.manager['ms']._button_press(event, clue)
+        if self.visualize:
+            event = Event()
+            event.xdata = row
+            event.ydata = col
+            event.button = 1
+            self.visual_ms._button_press(event, clue)
         return clue
 
     def flag(self, row, col):
+        """
+        Mark a cell as flagged in knowledge base
+        :param row:
+        :param col:
+        :return:
+        """
         self.kb[(row, col)] = self.FLAG
         self.mines_flagged += 1
-        clue = -1
-        event = Event()
-        event.xdata = row
-        event.ydata = col
-        event.button = 3
-        self.manager['ms']._button_press(event, clue)
+        if self.visualize:
+            clue = -1
+            event = Event()
+            event.xdata = row
+            event.ydata = col
+            event.button = 3
+            self.visual_ms._button_press(event, clue)
 
     def calc_score(self):
         """
@@ -97,7 +104,7 @@ class BaseAgent(ABC):
             elif self.kb[(i, j)] == self.env.MINE:
                 undiscovered_mines += 1
         score = (correctly_flagged_mines - incorrectly_flagged_mines) / self.env.n_mines
-        print(f'correctly_flagged: {correctly_flagged_mines}, incorrectly_flagged:{incorrectly_flagged_mines}')
+        print(f'{self.__class__.__name__}: correctly_flagged: {correctly_flagged_mines}, incorrectly_flagged:{incorrectly_flagged_mines}')
         return score
 
     def wait(self):
