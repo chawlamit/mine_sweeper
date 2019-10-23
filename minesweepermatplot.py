@@ -178,7 +178,7 @@ class MineSweeper(object):
         
         self.fig.canvas.draw()
         # plt.pause(1)
-        # input()
+        input()
 
     def _show_board(self):
         print("Process entered")

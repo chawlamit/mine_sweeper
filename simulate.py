@@ -1,6 +1,7 @@
 from environment import Environment
 from agents.baseline_agent import BaselineAgent
 from agents.final_agent import Agent
+from agents.csp_Agent import CSPAgent
 from agents.mine_aware_agent import MineAwareAgent
 from multiprocessing import Process, Pool, Lock
 import time
@@ -9,8 +10,8 @@ import numpy as np
 
 
 def performance(agent_holder):
-    dim = 30
-    n_sims = 1
+    dim = 40
+    n_sims = 10
 
     agent_name = agent_holder.__name__
     p2 = {}
@@ -39,4 +40,4 @@ if __name__ == '__main__':
 
     # start 4 worker processes
     pool = Pool(processes=3)
-    pool.map(performance, [BaselineAgent, Agent, MineAwareAgent])
+    pool.map(performance, [BaselineAgent, CSPAgent, MineAwareAgent])
