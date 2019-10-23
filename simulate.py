@@ -9,23 +9,20 @@ import numpy as np
 
 
 def performance(agent_holder):
-    dim = 40
+    dim = 30
     n_sims = 1
 
     agent_name = agent_holder.__name__
-    print(f'starting simulation for {agent_holder.__name__}')
     p2 = {}
-    for mine_density in np.arange(0.10, 0.45, 0.05):
-        print('Mine Density', mine_density)
-        # p1[str(mine_density)]=dict()
+    for mine_density in np.arange(0.10, 0.5, 0.05):
+        print(f'Simulation for {agent_holder.__name__}, {mine_density}')
 
         f_1 = []
-
         for i in range(n_sims):
             n_mines = mine_density * dim*dim
             n_mines = int(np.ceil(n_mines))
             env = Environment(dim, n_mines)
-            agent = Agent(env, debug=False, visualize=False)
+            agent = agent_holder(env, debug=False, visualize=False)
             st = time.time()
             agent.run()
             print('time: ', agent_name, time.time() - st)
@@ -33,8 +30,8 @@ def performance(agent_holder):
             f_1.append(p1)
 
         mean_score = np.mean(f_1)
-        p2[n_mines] = mean_score
-        print(agent_name, n_mines, mean_score)
+        p2[mine_density] = mean_score
+        print(agent_name, mine_density, mean_score)
     print(agent_name, p2)
 
 
