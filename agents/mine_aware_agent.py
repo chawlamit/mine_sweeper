@@ -7,8 +7,8 @@ import numpy as np
 
 class MineAwareAgent(ProbabilisticAgent):
 
-    def __init__(self, env: Environment, visualize=False):
-        super().__init__(env, visualize)
+    def __init__(self, env: Environment, visualize=False, debug=False):
+        super().__init__(env, visualize=visualize, debug=debug)
         self.all_cells = set()
         for i in range(self.env.dim):
             for j in range(self.env.dim):
