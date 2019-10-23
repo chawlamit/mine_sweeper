@@ -1,6 +1,4 @@
-from .final_agent import Agent
-from collections import OrderedDict
-import numpy as np
+from .csp_Agent import CSPAgent
 from utils import partial_equations, debug
 from functools import reduce
 
@@ -9,7 +7,7 @@ def mean(*args):
     return reduce(lambda x, y: x + y, args) / len(args)
 
 
-class ProbabilisticAgent(Agent):
+class ProbabilisticAgent(CSPAgent):
 
     def probabilistic_pick(self, cells_turned: int, mines_flagged: int, prob_calc=mean):
         """ Use the Remaining mines information while opening a random point to search """
