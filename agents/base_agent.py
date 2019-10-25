@@ -6,10 +6,6 @@ import matplotlib.pyplot as plt
 from utils import SETTINGS
 
 
-class Event:
-    pass
-
-
 class BaseAgent(ABC):
     FLAG = -2
 
@@ -97,13 +93,16 @@ class BaseAgent(ABC):
         return score
 
     def update_visualization(self, clue, row, col, button = 1):
+        """
+        Update the visualization after a cell is turned or flagged
+        """
         if self.visualize:
-            event = Event()
-            event.xdata = row
-            event.ydata = col
-            event.button = button
+            event = Event(row, col, button)
             self.visual_ms._button_press(event, clue)
 
 
-    def wait(self):
-        plt.pause(50)
+class Event:
+    def __init__(self, xdata, ydata, button):
+        self.xdata = xdata
+        self.ydata = ydata
+        self.button = button

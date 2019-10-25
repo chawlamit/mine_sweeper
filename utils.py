@@ -32,6 +32,12 @@ def partial_equations(a, b):
 
 
 def set_reduction(eqns, b):
+    """
+
+    :param eqns:
+    :param b:
+    :return:
+    """
     change_count = -1
     eqns_list = list(eqns.items())
     n = len(eqns_list)

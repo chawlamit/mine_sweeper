@@ -3,8 +3,16 @@ from .base_agent import BaseAgent
 
 
 class BaselineAgent(BaseAgent):
+    """"
+    """
 
-    def infer(self, row, col):
+    def infer(self, row: int, col: int) -> (set, set, set, set):
+        """
+        Returns the set of neigbours, hidden neigbours, mines and safe cells
+        :param row:
+        :param col:
+        :return:
+        """
 
         safe = set()
         mines = set()
@@ -31,6 +39,9 @@ class BaselineAgent(BaseAgent):
         pass
 
     def run(self):
+        """
+        Base function to run the agent
+        """
         fringe = []
         while self.cells_turned + self.mines_flagged < self.env.dim * self.env.dim:
 
