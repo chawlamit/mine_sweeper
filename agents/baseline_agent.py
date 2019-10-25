@@ -17,6 +17,8 @@ class BaselineAgent(BaseAgent):
                     neighbors.add((row + i, col + j))
                 if (row + i, col + j) in self.kb:
                     clue = self.kb[(row + i, col + j)]
+                    if clue is None:
+                        continue
                     if clue == self.env.MINE or clue == self.FLAG:
                         mines.add((row + i, col + j))
                     else:

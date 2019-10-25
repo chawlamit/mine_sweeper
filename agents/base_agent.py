@@ -62,12 +62,7 @@ class BaseAgent(ABC):
         """
         clue = self.env.query(row, col)
         self.cells_turned += 1
-        if self.visualize:
-            event = Event()
-            event.xdata = row
-            event.ydata = col
-            event.button = 1
-            self.visual_ms._button_press(event, clue)
+        self.update_visualization(clue, row, col)
         return clue
 
     def flag(self, row, col):
@@ -79,13 +74,7 @@ class BaseAgent(ABC):
         """
         self.kb[(row, col)] = self.FLAG
         self.mines_flagged += 1
-        if self.visualize:
-            clue = -1
-            event = Event()
-            event.xdata = row
-            event.ydata = col
-            event.button = 3
-            self.visual_ms._button_press(event, clue)
+        self.update_visualization(-1, row, col, 3)
 
     def calc_score(self):
         """
@@ -106,6 +95,15 @@ class BaseAgent(ABC):
         score = (correctly_flagged_mines - incorrectly_flagged_mines) / self.env.n_mines
         print(f'{self.__class__.__name__}: correctly_flagged: {correctly_flagged_mines}, incorrectly_flagged:{incorrectly_flagged_mines}')
         return score
+
+    def update_visualization(self, clue, row, col, button = 1):
+        if self.visualize:
+            event = Event()
+            event.xdata = row
+            event.ydata = col
+            event.button = button
+            self.visual_ms._button_press(event, clue)
+
 
     def wait(self):
         plt.pause(50)
