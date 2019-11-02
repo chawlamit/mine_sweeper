@@ -18,7 +18,7 @@ class MineSweeper(object):
     uncovered_color = '#AAAAAA'
     edge_color = '#888888'
     count_colors = ['none', 'blue', 'green', 'red', 'darkblue',
-                    'darkred', 'darkgreen', 'black', 'black']
+                    'darkred', 'darkgreen', 'black', 'black', 'purple']
     flag_vertices = np.array([[0.25, 0.2], [0.25, 0.8],
                               [0.75, 0.65], [0.25, 0.5]])
 
@@ -150,6 +150,9 @@ class MineSweeper(object):
         #     self._mark_remaining_mines()
 
     def _button_press(self, event, clue):
+        if clue == None:
+            clue = 9
+
         if self.game_over or (event.xdata is None) or (event.ydata is None):
             return
         i, j = map(int, (event.xdata, event.ydata))

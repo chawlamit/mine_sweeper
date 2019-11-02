@@ -3,10 +3,16 @@ from .base_agent import BaseAgent
 
 
 class BaselineAgent(BaseAgent):
-    def __init__(self, env: Environment):
-        super().__init__(env)
+    """"
+    """
 
-    def infer(self, row, col):
+    def infer(self, row: int, col: int) -> (set, set, set, set):
+        """
+        Returns the set of neigbours, hidden neigbours, mines and safe cells
+        :param row:
+        :param col:
+        :return:
+        """
 
         safe = set()
         mines = set()
@@ -19,6 +25,8 @@ class BaselineAgent(BaseAgent):
                     neighbors.add((row + i, col + j))
                 if (row + i, col + j) in self.kb:
                     clue = self.kb[(row + i, col + j)]
+                    if clue is None:
+                        continue
                     if clue == self.env.MINE or clue == self.FLAG:
                         mines.add((row + i, col + j))
                     else:
@@ -31,9 +39,11 @@ class BaselineAgent(BaseAgent):
         pass
 
     def run(self):
+        """
+        Base function to run the agent
+        """
         fringe = []
         while self.cells_turned + self.mines_flagged < self.env.dim * self.env.dim:
-            # print('Fringe: ', fringe)
 
             if not fringe:
                 row, col = self.pick_random()
